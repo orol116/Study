@@ -11,31 +11,30 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rest.api.entity.Users;
 import com.rest.api.repository.UserJpaRepository;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Api(tags = {"1. User"})
 @RequiredArgsConstructor // 클래스 상단에 선언하면 class 내부에 final로 선언된 객체에 대해서 의존성 주입을 수행한다.
 						 // 새로운 필드를 추가할 때 다시 생성자를 만들어서 관리해야하는 번거로움을 없애준다. (@Autowired를 사용하지 않고 의존성 주입)
 @RestController
 @RequestMapping("/v1")
+@Tag(name = "users", description = "회원 영역 API")
 public class UserController {
 	
 	private final UserJpaRepository userJpaRepository;
 	
-	@ApiOperation(value = "회원 조회", notes = "모든 회원을 조회한다.")
+	@Operation(summary = "회원 조회", description = "회원을 조회한다.")
 	@GetMapping("/user")
 	public List<Users> findAllUser() {
 		return userJpaRepository.findAll(); // JPA 사용 시 기본 CRUD에 대해서는 별도 설정없이 쿼리를 질의할 수 있도록 메서드 지원
 											// findAll()은 select rest, name, uid from user; 쿼리를 내부적으로 실행시켜줌
 	}
 	
-	@ApiOperation(value = "회원 입력", notes = "회원을 입력한다.")
+	@Operation(summary = "회원 등록", description = "회원을 저장한다.")
 	@PostMapping("/user")
-	public Users save(@ApiParam(value = "회원아이디", required = true) @RequestParam String uid
-					, @ApiParam(value = "회원이름",   required = true) @RequestParam String name) {
+	public Users save(@RequestParam(value = "uid")  String uid   // swagger 테스트 시 파라미터 정확한 입력을 위한 value 설정
+					, @RequestParam(value = "name") String name) {
 		Users user = Users.builder()
 				.uid("orol116@naver.com")
 				.name("윤주빈")
