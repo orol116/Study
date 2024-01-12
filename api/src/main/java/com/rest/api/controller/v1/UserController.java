@@ -1,6 +1,6 @@
 package com.rest.api.controller.v1;
 
-import java.util.List;
+//import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rest.api.entity.Users;
+import com.rest.api.exception.CUserNotFoundException;
 import com.rest.api.model.CommonResult;
 import com.rest.api.model.ListResult;
 import com.rest.api.model.SingleResult;
@@ -45,10 +46,11 @@ public class UserController {
 	
 	@Operation(summary = "회원 단건 조회", description = "userId로 회원을 조회한다.")
 	@GetMapping("/users/{msrl}")
-	public SingleResult<Users> findUserById(@PathVariable long msrl) {
+	public SingleResult<Users> findUserById(@PathVariable long msrl
+										  , @RequestParam String lang) {
 		
 		// 결과 데이터가 단일 건인 경우 getBasicResult를 이용해서 결과를 출력한다.
-		return responseService.getSingleResult(userJpaRepository.findById(msrl).orElse(null));
+		return responseService.getSingleResult(userJpaRepository.findById(msrl).orElseThrow(CUserNotFoundException::new));
 	}
 	
 	@Operation(summary = "회원 등록", description = "회원을 저장한다.")
