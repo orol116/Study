@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.rest.api.exception.CEmailSigninFailedException;
 import com.rest.api.exception.CUserNotFoundException;
 import com.rest.api.model.CommonResult;
 import com.rest.api.service.ResponseService;
@@ -33,6 +34,12 @@ public class ExceptionAdvice {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	protected CommonResult userNotFoundException(HttpServletRequest request, CUserNotFoundException e) {
 		return responseService.getFailResult(Integer.valueOf(getMessage("userNotFound.code")), getMessage("userNotFount.msg"));
+	}
+	
+	@ExceptionHandler(CEmailSigninFailedException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	protected CommonResult emailSigninFailed(HttpServletRequest request, CEmailSigninFailedException e) {
+		return responseService.getFailResult(Integer.valueOf(getMessage("emailSigninFailed.code")), getMessage("emailSigninFailed.msg"));
 	}
 	
 	// code 정보에 해당하는 메시지를 조회

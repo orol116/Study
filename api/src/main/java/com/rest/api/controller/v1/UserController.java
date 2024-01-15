@@ -46,7 +46,7 @@ public class UserController {
 	
 	@Operation(summary = "회원 단건 조회", description = "userId로 회원을 조회한다.")
 	@GetMapping("/users/{msrl}")
-	public SingleResult<Users> findUserById(@PathVariable long msrl
+	public SingleResult<Users> findUserById(@PathVariable int msrl
 										  , @RequestParam String lang) {
 		
 		// 결과 데이터가 단일 건인 경우 getBasicResult를 이용해서 결과를 출력한다.
@@ -71,7 +71,7 @@ public class UserController {
 	
 	@Operation(summary = "회원 수정", description = "회원 정보를 수정한다.")
 	@PutMapping("/users")
-	public SingleResult<Users> modify(@RequestParam("msrl") long msrl
+	public SingleResult<Users> modify(@RequestParam("msrl") int msrl
 									, @RequestParam("uid")  String uid
 									, @RequestParam("name") String name) {
 		
@@ -85,7 +85,7 @@ public class UserController {
 	
 	@Operation(summary = "회원 삭제", description = "userId로 회원 정보를 삭제한다.")
 	@DeleteMapping("/users/{msrl}")
-	public CommonResult delete(@PathVariable long msrl) {
+	public CommonResult delete(@PathVariable int msrl) {
 		
 		userJpaRepository.deleteById(msrl);
 		
