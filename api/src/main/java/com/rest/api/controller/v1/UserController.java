@@ -1,11 +1,13 @@
 package com.rest.api.controller.v1;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 //import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,40 +46,41 @@ public class UserController {
 											// findAll()은 select rest, name, uid from user; 쿼리를 내부적으로 실행시켜줌
 	}
 	
-	@Operation(summary = "회원 단건 조회", description = "userId로 회원을 조회한다.")
+	@Operation(summary = "회원 단건 조회", description = "회원 번호로 회원을 조회한다.")
 	@GetMapping("/users/{msrl}")
-	public SingleResult<Users> findUserById(@PathVariable int msrl
-										  , @RequestParam String lang) {
+	public SingleResult<Users> findUserById(@RequestParam String lang) {
+		
+		// SecurityContext에서 인증 받은 회원의 정보를 얻어온다.
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String id = authentication.getName();
 		
 		// 결과 데이터가 단일 건인 경우 getBasicResult를 이용해서 결과를 출력한다.
-		return responseService.getSingleResult(userJpaRepository.findById(msrl).orElseThrow(CUserNotFoundException::new));
+		return responseService.getSingleResult(userJpaRepository.findByUid(id).orElseThrow(CUserNotFoundException::new));
 	}
 	
-	@Operation(summary = "회원 등록", description = "회원을 저장한다.")
-	@PostMapping("/users")
-	public SingleResult<Users> save(@RequestParam("uid")  String uid   // swagger 테스트 시 파라미터 정확한 입력을 위한 value 설정
-								  , @RequestParam("name") String name) {
-		Users user = Users.builder()
-				.uid(uid)
-				.name(name)
-				.build();
-		return responseService.getSingleResult(userJpaRepository.save(user));
-		
-//		return userJpaRepository.save(user); // USER 테이블에 데이터를 1건 입력함.
-											 // .save(user); 역시 JPA에서 기본 제공하는 메서드
-											 // user 객체를 전달하면 다음과 같이 내부적으로 insert문을 실행시켜줌
-											 // insert into user (rest, name, uid) values (null, ?, ?);
-	}
+//	@Operation(summary = "회원 등록", description = "회원을 저장한다.")
+//	@PostMapping("/users")
+//	public SingleResult<Users> save(@RequestParam("uid")  String uid   // swagger 테스트 시 파라미터 정확한 입력을 위한 value 설정
+//								  , @RequestParam("name") String name) {
+//		Users user = Users.builder()
+//				.uid(uid)
+//				.name(name)
+//				.build();
+//		return responseService.getSingleResult(userJpaRepository.save(user));
+//		
+////		return userJpaRepository.save(user); // USER 테이블에 데이터를 1건 입력함.
+//											 // .save(user); 역시 JPA에서 기본 제공하는 메서드
+//											 // user 객체를 전달하면 다음과 같이 내부적으로 insert문을 실행시켜줌
+//											 // insert into user (rest, name, uid) values (null, ?, ?);
+//	}
 	
 	@Operation(summary = "회원 수정", description = "회원 정보를 수정한다.")
 	@PutMapping("/users")
 	public SingleResult<Users> modify(@RequestParam("msrl") int msrl
-									, @RequestParam("uid")  String uid
 									, @RequestParam("name") String name) {
 		
 		Users users = Users.builder()
 				.msrl(msrl)
-				.uid(uid)
 				.name(name)
 				.build();
 		return responseService.getSingleResult(userJpaRepository.save(users));
